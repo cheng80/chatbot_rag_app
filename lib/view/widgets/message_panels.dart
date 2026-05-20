@@ -10,21 +10,29 @@ class WarningBubble extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return const TourismPanel(
-      color: Color(0xfffff3c9),
+      color: tourismWarnBgColor,
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
+        spacing: tourismSpace1,
         children: [
           Text(
             '방문 전 확인 필요',
             style: TextStyle(
-              fontWeight: FontWeight.w900,
-              color: Color(0xff755900),
+              fontSize: 13,
+              fontWeight: FontWeight.w800,
+              height: 1.35,
+              color: tourismWarnColor,
+              letterSpacing: 0,
             ),
           ),
-          SizedBox(height: 4),
           Text(
             '운영 시간, 휠체어 동선, 주차, 화장실 정보는 방문 전 공식 안내·전화·현장 정보로 다시 확인해 주세요.',
-            style: TextStyle(color: Color(0xff755900), height: 1.45),
+            style: TextStyle(
+              color: tourismWarnColor,
+              fontSize: 13,
+              height: 1.55,
+              letterSpacing: 0,
+            ),
           ),
         ],
       ),
@@ -44,15 +52,18 @@ class UserBubble extends StatelessWidget {
         alignment: Alignment.centerRight,
         child: Container(
           margin: const EdgeInsets.only(top: 11),
-          constraints: const BoxConstraints(maxWidth: 520),
-          padding: const EdgeInsets.symmetric(horizontal: 15, vertical: 13),
+          constraints: const BoxConstraints(maxWidth: 540),
+          padding: const EdgeInsets.symmetric(
+            horizontal: tourismSpace4,
+            vertical: tourismSpace3,
+          ),
           decoration: BoxDecoration(
-            color: const Color(0xffbdebd2),
-            borderRadius: BorderRadius.circular(22),
+            color: tourismPrimaryContainerColor,
+            borderRadius: BorderRadius.circular(tourismRadiusLg),
           ),
           child: Text(
             text,
-            style: const TextStyle(fontWeight: FontWeight.w700, height: 1.5),
+            style: tourismBodyStyle.copyWith(fontWeight: FontWeight.w700),
           ),
         ),
       ),
@@ -100,12 +111,7 @@ class AnswerPanel extends StatelessWidget {
           children: [
             Row(
               children: [
-                const Expanded(
-                  child: Text(
-                    '답변',
-                    style: TextStyle(fontSize: 15, fontWeight: FontWeight.w900),
-                  ),
-                ),
+                const Expanded(child: Text('답변', style: tourismTitleStyle)),
                 if (canExpand)
                   TextButton(
                     onPressed: onToggleAnswer,
@@ -122,7 +128,7 @@ class AnswerPanel extends StatelessWidget {
                   ? const SizedBox.shrink(key: ValueKey('no-clarification'))
                   : Padding(
                       key: ValueKey(clarificationType),
-                      padding: const EdgeInsets.only(bottom: 10),
+                      padding: const EdgeInsets.only(bottom: tourismSpace3),
                       child: ClarificationBanner(type: clarificationType!),
                     ),
             ),
@@ -133,7 +139,7 @@ class AnswerPanel extends StatelessWidget {
               child: Text(
                 answer,
                 key: ValueKey(answer),
-                style: const TextStyle(height: 1.62),
+                style: tourismBodyStyle.copyWith(height: 1.68),
               ),
             ),
             AnimatedSwitcher(
@@ -141,7 +147,7 @@ class AnswerPanel extends StatelessWidget {
               child: isLoading
                   ? const Padding(
                       key: ValueKey('loading'),
-                      padding: EdgeInsets.only(top: 10),
+                      padding: EdgeInsets.only(top: tourismSpace3),
                       child: LinearProgressIndicator(minHeight: 4),
                     )
                   : const SizedBox.shrink(key: ValueKey('not-loading')),
@@ -152,10 +158,10 @@ class AnswerPanel extends StatelessWidget {
                   ? const SizedBox.shrink(key: ValueKey('no-suggestions'))
                   : Padding(
                       key: ValueKey(suggestions.join('|')),
-                      padding: const EdgeInsets.only(top: 12),
+                      padding: const EdgeInsets.only(top: tourismSpace3),
                       child: Wrap(
-                        spacing: 7,
-                        runSpacing: 7,
+                        spacing: tourismSpace2,
+                        runSpacing: tourismSpace2,
                         children: _suggestionChips(
                           suggestions,
                           suggestionType,
@@ -164,15 +170,14 @@ class AnswerPanel extends StatelessWidget {
                       ),
                     ),
             ),
-            const Divider(height: 26),
-            const Text('출처', style: TextStyle(fontWeight: FontWeight.w900)),
-            const SizedBox(height: 8),
+            const Divider(height: tourismSpace5),
+            const Text('출처', style: tourismTitleStyle),
             AnimatedSwitcher(
               duration: tourismMotionDuration,
               child: Wrap(
                 key: ValueKey(sources.map((source) => source.title).join('|')),
-                spacing: 7,
-                runSpacing: 7,
+                spacing: tourismSpace2,
+                runSpacing: tourismSpace2,
                 children: sources.isEmpty
                     ? const [
                         TourismPill(text: '응답 후 한국관광공사 자료와 카드별 출처가 표시됩니다.'),
@@ -231,29 +236,32 @@ class ClarificationBanner extends StatelessWidget {
     };
     return Container(
       width: double.infinity,
-      padding: const EdgeInsets.all(10),
+      padding: const EdgeInsets.all(tourismSpace3),
       decoration: BoxDecoration(
-        color: const Color(0xfffff3c9),
-        borderRadius: BorderRadius.circular(14),
+        color: tourismWarnBgColor,
+        borderRadius: BorderRadius.circular(tourismRadiusMd),
         border: Border.all(color: const Color(0x55755900)),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
+        spacing: tourismSpace1,
         children: [
           Text(
             copy.$1,
             style: const TextStyle(
-              fontWeight: FontWeight.w900,
-              color: Color(0xff755900),
+              fontWeight: FontWeight.w800,
+              color: tourismWarnColor,
+              height: 1.35,
+              letterSpacing: 0,
             ),
           ),
-          const SizedBox(height: 4),
           Text(
             copy.$2,
             style: const TextStyle(
               fontSize: 12,
-              height: 1.4,
-              color: Color(0xff755900),
+              height: 1.5,
+              color: tourismWarnColor,
+              letterSpacing: 0,
             ),
           ),
         ],

@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 
+import 'common_widgets.dart';
+
 class HelpSheet extends StatelessWidget {
   const HelpSheet({super.key});
 
@@ -7,13 +9,24 @@ class HelpSheet extends StatelessWidget {
   Widget build(BuildContext context) {
     return SafeArea(
       child: Padding(
-        padding: const EdgeInsets.fromLTRB(20, 0, 20, 24),
+        padding: const EdgeInsets.fromLTRB(
+          tourismSpace5,
+          0,
+          tourismSpace5,
+          tourismSpace6,
+        ),
         child: ListView(
           shrinkWrap: true,
           children: [
             const Text(
               '사용법과 유의점',
-              style: TextStyle(fontSize: 20, fontWeight: FontWeight.w900),
+              style: TextStyle(
+                color: tourismInkColor,
+                fontSize: 20,
+                fontWeight: FontWeight.w800,
+                height: 1.25,
+                letterSpacing: 0,
+              ),
             ),
             const HelpSection(
               title: '사용법',
@@ -55,19 +68,16 @@ class HelpSection extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Padding(
-      padding: const EdgeInsets.only(top: 12),
+      padding: const EdgeInsets.only(top: tourismSpace4),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
+        spacing: tourismSpace2,
         children: [
-          Text(
-            title,
-            style: const TextStyle(fontSize: 15, fontWeight: FontWeight.w900),
-          ),
-          const SizedBox(height: 7),
+          Text(title, style: tourismTitleStyle),
           ...items.map(
             (item) => Padding(
-              padding: const EdgeInsets.only(bottom: 6),
-              child: Text('• $item', style: const TextStyle(height: 1.45)),
+              padding: const EdgeInsets.only(bottom: tourismSpace1),
+              child: Text('• $item', style: tourismBodyStyle),
             ),
           ),
         ],

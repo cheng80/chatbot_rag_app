@@ -22,10 +22,11 @@ class DebugPanel extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final backend = ref.watch(tourismBackendNotifierProvider);
     return Container(
-      color: const Color(0xffeff7f1),
-      padding: const EdgeInsets.all(12),
+      color: tourismSurfaceSoftColor,
+      padding: const EdgeInsets.all(tourismSpace3),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
+        spacing: tourismSpace2,
         children: [
           TextField(
             controller: apiBaseController,
@@ -35,7 +36,6 @@ class DebugPanel extends ConsumerWidget {
               border: OutlineInputBorder(),
             ),
           ),
-          const SizedBox(height: 8),
           ListenableBuilder(
             listenable: apiBaseController,
             builder: (context, _) {
@@ -45,8 +45,8 @@ class DebugPanel extends ConsumerWidget {
               );
               final apiBase = AppConfig.normalizeApiBase(base);
               return Wrap(
-                spacing: 7,
-                runSpacing: 7,
+                spacing: tourismSpace2,
+                runSpacing: tourismSpace2,
                 children: [
                   ActionChip(
                     label: const Text('Swagger'),
@@ -65,10 +65,9 @@ class DebugPanel extends ConsumerWidget {
               );
             },
           ),
-          const SizedBox(height: 8),
           Wrap(
-            spacing: 7,
-            runSpacing: 7,
+            spacing: tourismSpace2,
+            runSpacing: tourismSpace2,
             children: [
               ActionChip(
                 label: Text(

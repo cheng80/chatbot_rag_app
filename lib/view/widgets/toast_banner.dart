@@ -14,15 +14,20 @@ class ToastBanner extends StatelessWidget {
         duration: tourismMotionDuration,
         child: Material(
           key: ValueKey(message),
-          color: const Color(0xff146c4e),
+          color: tourismPrimaryColor,
           borderRadius: BorderRadius.circular(999),
           child: Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 11),
+            padding: const EdgeInsets.symmetric(
+              horizontal: tourismSpace4,
+              vertical: tourismSpace3,
+            ),
             child: Text(
               message,
               style: const TextStyle(
                 color: Colors.white,
                 fontWeight: FontWeight.w800,
+                height: 1.35,
+                letterSpacing: 0,
               ),
             ),
           ),

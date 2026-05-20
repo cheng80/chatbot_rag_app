@@ -12,7 +12,6 @@ class CardsPanel extends StatelessWidget {
     required this.cards,
     required this.cardCount,
     required this.queryText,
-    required this.isWide,
     required this.moreMessage,
     required this.onMore,
   });
@@ -20,7 +19,6 @@ class CardsPanel extends StatelessWidget {
   final List<TourismCard> cards;
   final int cardCount;
   final String queryText;
-  final bool isWide;
   final String? moreMessage;
   final ValueChanged<String> onMore;
 
@@ -32,26 +30,18 @@ class CardsPanel extends StatelessWidget {
         children: [
           Row(
             children: [
-              const Expanded(
-                child: Text(
-                  '추천 카드',
-                  style: TextStyle(fontSize: 15, fontWeight: FontWeight.w900),
-                ),
-              ),
+              const Expanded(child: Text('추천 카드', style: tourismTitleStyle)),
               AnimatedSwitcher(
                 duration: tourismMotionDuration,
                 child: Text(
                   '$cardCount개',
                   key: ValueKey(cardCount),
-                  style: const TextStyle(
-                    color: Color(0xff5a6d62),
-                    fontWeight: FontWeight.w800,
-                  ),
+                  style: tourismCaptionStyle,
                 ),
               ),
             ],
           ),
-          const SizedBox(height: 10),
+          const SizedBox(height: tourismSpace3),
           AnimatedSwitcher(
             duration: tourismMotionDuration,
             switchInCurve: tourismMotionCurve,
@@ -60,17 +50,18 @@ class CardsPanel extends StatelessWidget {
                 ? const Text(
                     '추천 카드가 아직 없습니다.',
                     key: ValueKey('empty-cards'),
-                    style: TextStyle(color: Color(0xff5a6d62)),
+                    style: tourismSecondaryStyle,
                   )
                 : LayoutBuilder(
                     key: ValueKey('cards-list'),
                     builder: (context, constraints) {
-                      final itemWidth = isWide
-                          ? (constraints.maxWidth - 10) / 2
+                      final useTwoColumns = constraints.maxWidth >= 640;
+                      final itemWidth = useTwoColumns
+                          ? (constraints.maxWidth - tourismSpace3) / 2
                           : constraints.maxWidth;
                       return Wrap(
-                        spacing: 10,
-                        runSpacing: 10,
+                        spacing: tourismSpace3,
+                        runSpacing: tourismSpace3,
                         children: cards
                             .map(
                               (card) => SizedBox(
@@ -94,7 +85,7 @@ class CardsPanel extends StatelessWidget {
                 ? const SizedBox.shrink(key: ValueKey('no-more-cards'))
                 : Padding(
                     key: ValueKey(moreMessage),
-                    padding: const EdgeInsets.only(top: 10),
+                    padding: const EdgeInsets.only(top: tourismSpace3),
                     child: OutlinedButton.icon(
                       onPressed: () => onMore(moreMessage!),
                       icon: const Icon(Icons.add_location_alt_outlined),
@@ -125,6 +116,9 @@ class PlaceCardState extends State<PlaceCard> {
   Widget build(BuildContext context) {
     final evidence = cardEvidenceHighlights(widget.card, widget.queryText);
     final details = rawDetailEntries(widget.card);
+    final layout = TourismLayoutMetrics.fromWidth(
+      MediaQuery.sizeOf(context).width,
+    );
     return AnimatedSize(
       duration: tourismMotionDuration,
       curve: tourismMotionCurve,
@@ -134,31 +128,32 @@ class PlaceCardState extends State<PlaceCard> {
         curve: tourismMotionCurve,
         decoration: BoxDecoration(
           color: Colors.white,
-          borderRadius: BorderRadius.circular(22),
-          border: Border.all(color: Colors.black.withValues(alpha: 0.08)),
+          borderRadius: BorderRadius.circular(tourismRadiusLg),
+          border: Border.all(color: tourismLineColor),
         ),
         clipBehavior: Clip.antiAlias,
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            AspectRatio(
-              aspectRatio: 16 / 7,
+            SizedBox(
+              height: layout.cardMediaHeight,
+              width: double.infinity,
               child: widget.card.imageUrl.isNotEmpty
-                  ? Image.network(
-                      widget.card.imageUrl,
-                      fit: BoxFit.cover,
-                      errorBuilder: (context, error, stackTrace) =>
-                          const CardMediaFallback(),
+                  ? CardImagePreview(
+                      imageUrl: widget.card.imageUrl,
+                      title: widget.card.title,
                     )
                   : const CardMediaFallback(),
             ),
             Padding(
-              padding: const EdgeInsets.all(12),
+              padding: const EdgeInsets.all(tourismSpace3),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
+                spacing: tourismSpace2,
                 children: [
                   Row(
                     crossAxisAlignment: CrossAxisAlignment.start,
+                    spacing: tourismSpace2,
                     children: [
                       Expanded(
                         child: Text(
@@ -167,7 +162,9 @@ class PlaceCardState extends State<PlaceCard> {
                               : widget.card.title,
                           style: const TextStyle(
                             fontSize: 16,
-                            fontWeight: FontWeight.w900,
+                            fontWeight: FontWeight.w800,
+                            height: 1.4,
+                            letterSpacing: 0,
                           ),
                         ),
                       ),
@@ -178,24 +175,18 @@ class PlaceCardState extends State<PlaceCard> {
                       ),
                     ],
                   ),
-                  const SizedBox(height: 8),
                   Text(
                     widget.card.address.isEmpty
                         ? '주소 확인 필요'
                         : widget.card.address,
-                    style: const TextStyle(
-                      color: Color(0xff5a6d62),
-                      height: 1.4,
-                    ),
+                    style: tourismSecondaryStyle,
                   ),
-                  const SizedBox(height: 8),
                   Text(
                     widget.card.reason.isEmpty
                         ? '추천 사유 확인 필요'
                         : widget.card.reason,
-                    style: const TextStyle(height: 1.45),
+                    style: tourismBodyStyle,
                   ),
-                  const SizedBox(height: 10),
                   ...evidence.map(
                     (item) => EvidenceRow(label: item.$1, value: item.$2),
                   ),
@@ -207,8 +198,8 @@ class PlaceCardState extends State<PlaceCard> {
                     value: publicSourceName(widget.card.sourceName),
                   ),
                   Wrap(
-                    spacing: 7,
-                    runSpacing: 7,
+                    spacing: tourismSpace2,
+                    runSpacing: tourismSpace2,
                     children: [
                       if (details.isNotEmpty)
                         ActionChip(
@@ -233,8 +224,9 @@ class PlaceCardState extends State<PlaceCard> {
                     child: _showDetails
                         ? Column(
                             key: const ValueKey('details-open'),
+                            crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
-                              const SizedBox(height: 8),
+                              const SizedBox(height: tourismSpace2),
                               ...details.map(
                                 (item) =>
                                     DetailLine(label: item.$1, value: item.$2),
@@ -276,10 +268,7 @@ class PlaceCardState extends State<PlaceCard> {
                 children: [
                   const ListTile(
                     leading: Icon(Icons.map_outlined),
-                    title: Text(
-                      '지도 앱 선택',
-                      style: TextStyle(fontWeight: FontWeight.w900),
-                    ),
+                    title: Text('지도 앱 선택', style: tourismTitleStyle),
                   ),
                   for (final map in maps)
                     ListTile(
@@ -321,4 +310,158 @@ class PlaceCardState extends State<PlaceCard> {
       context,
     ).showSnackBar(SnackBar(content: Text(message)));
   }
+}
+
+class CardImagePreview extends StatelessWidget {
+  const CardImagePreview({
+    super.key,
+    required this.imageUrl,
+    required this.title,
+  });
+
+  final String imageUrl;
+  final String title;
+
+  @override
+  Widget build(BuildContext context) {
+    final accessibleTitle = title.isEmpty ? '장소' : title;
+    return Semantics(
+      container: true,
+      button: true,
+      label: '$accessibleTitle 원본 사진 보기',
+      child: Material(
+        color: Colors.transparent,
+        child: InkWell(
+          onTap: () => showCardImageDialog(
+            context: context,
+            imageUrl: imageUrl,
+            title: accessibleTitle,
+          ),
+          child: Stack(
+            fit: StackFit.expand,
+            children: [
+              Image.network(
+                imageUrl,
+                fit: BoxFit.cover,
+                errorBuilder: (context, error, stackTrace) =>
+                    const CardMediaFallback(),
+              ),
+              const Positioned(
+                right: tourismSpace2,
+                bottom: tourismSpace2,
+                child: CardImageZoomBadge(),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+class CardImageZoomBadge extends StatelessWidget {
+  const CardImageZoomBadge({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return DecoratedBox(
+      decoration: BoxDecoration(
+        color: Colors.black.withValues(alpha: 0.62),
+        borderRadius: BorderRadius.circular(999),
+      ),
+      child: const Padding(
+        padding: EdgeInsets.symmetric(
+          horizontal: tourismSpace2,
+          vertical: tourismSpace1,
+        ),
+        child: Row(
+          mainAxisSize: MainAxisSize.min,
+          spacing: tourismSpace1,
+          children: [
+            Icon(Icons.zoom_out_map, color: Colors.white, size: 15),
+            Text(
+              '원본',
+              style: TextStyle(
+                color: Colors.white,
+                fontSize: 12,
+                fontWeight: FontWeight.w800,
+                height: 1.25,
+                letterSpacing: 0,
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+Future<void> showCardImageDialog({
+  required BuildContext context,
+  required String imageUrl,
+  required String title,
+}) {
+  final layout = TourismLayoutMetrics.fromWidth(
+    MediaQuery.sizeOf(context).width,
+  );
+  final maxWidth = layout.deviceClass == TourismDeviceClass.phone
+      ? double.infinity
+      : layout.contentMaxWidth + 120;
+
+  return showDialog<void>(
+    context: context,
+    barrierColor: Colors.black.withValues(alpha: 0.84),
+    barrierDismissible: true,
+    builder: (context) {
+      return SafeArea(
+        child: Stack(
+          children: [
+            Positioned.fill(
+              child: GestureDetector(
+                behavior: HitTestBehavior.opaque,
+                onTap: () => Navigator.of(context).pop(),
+              ),
+            ),
+            Center(
+              child: Padding(
+                padding: const EdgeInsets.all(tourismSpace4),
+                child: ConstrainedBox(
+                  constraints: BoxConstraints(
+                    maxWidth: maxWidth,
+                    maxHeight:
+                        MediaQuery.sizeOf(context).height - tourismSpace6 * 2,
+                  ),
+                  child: GestureDetector(
+                    onTap: () {},
+                    child: InteractiveViewer(
+                      minScale: 1,
+                      maxScale: 4,
+                      child: Image.network(
+                        imageUrl,
+                        fit: BoxFit.contain,
+                        errorBuilder: (context, error, stackTrace) =>
+                            const AspectRatio(
+                              aspectRatio: 4 / 3,
+                              child: CardMediaFallback(),
+                            ),
+                      ),
+                    ),
+                  ),
+                ),
+              ),
+            ),
+            Positioned(
+              top: tourismSpace3,
+              right: tourismSpace3,
+              child: IconButton.filled(
+                tooltip: '사진 닫기',
+                onPressed: () => Navigator.of(context).pop(),
+                icon: const Icon(Icons.close),
+              ),
+            ),
+          ],
+        ),
+      );
+    },
+  );
 }

@@ -1,25 +1,29 @@
 import 'package:flutter/material.dart';
 
 import 'view/tourism_chat_screen.dart';
+import 'view/widgets/common_widgets.dart';
 
 class TourismChatApp extends StatelessWidget {
   const TourismChatApp({super.key});
 
   @override
   Widget build(BuildContext context) {
-    const seed = Color(0xff146c4e);
     return MaterialApp(
       debugShowCheckedModeBanner: false,
       title: '무장애 관광 상담',
       theme: ThemeData(
         colorScheme: ColorScheme.fromSeed(
-          seedColor: seed,
+          seedColor: tourismPrimaryColor,
           brightness: Brightness.light,
-          surface: const Color(0xfff8fcf8),
+          surface: tourismSurfaceColor,
         ),
-        scaffoldBackgroundColor: const Color(0xfff3f8f4),
+        scaffoldBackgroundColor: tourismPageColor,
         useMaterial3: true,
         fontFamilyFallback: const ['Apple SD Gothic Neo', 'Noto Sans KR'],
+        textTheme: ThemeData.light().textTheme.apply(
+          bodyColor: tourismInkColor,
+          displayColor: tourismInkColor,
+        ),
       ),
       builder: (context, child) {
         final media = MediaQuery.of(context);

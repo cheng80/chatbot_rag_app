@@ -9,6 +9,7 @@ import '../vm/tourism_chat_notifier.dart';
 import '../vm/tourism_models.dart';
 import '../vm/tourism_option_builder.dart';
 import 'widgets/cards_panel.dart';
+import 'widgets/common_widgets.dart';
 import 'widgets/composer.dart';
 import 'widgets/debug_panel.dart';
 import 'widgets/help_sheet.dart';
@@ -65,24 +66,23 @@ class _TourismChatScreenState extends ConsumerState<TourismChatScreen> {
   @override
   Widget build(BuildContext context) {
     final width = MediaQuery.sizeOf(context).width;
-    final isWide = width >= 720;
-    final isPhone = width < 600;
+    final layout = TourismLayoutMetrics.fromWidth(width);
     final chatState = ref.watch(tourismChatNotifierProvider);
 
     return Scaffold(
       body: SafeArea(
         child: Center(
           child: ConstrainedBox(
-            constraints: const BoxConstraints(maxWidth: 780),
+            constraints: BoxConstraints(maxWidth: layout.appMaxWidth),
             child: Container(
-              margin: EdgeInsets.all(isPhone ? 0 : 14),
+              margin: EdgeInsets.all(layout.shellMargin),
               decoration: BoxDecoration(
-                color: const Color(0xffdcece2),
-                borderRadius: BorderRadius.circular(isPhone ? 0 : 28),
-                border: isPhone
+                color: tourismChatColor,
+                borderRadius: BorderRadius.circular(layout.isPhone ? 0 : 28),
+                border: layout.isPhone
                     ? null
                     : Border.all(color: Colors.black.withValues(alpha: 0.08)),
-                boxShadow: isPhone
+                boxShadow: layout.isPhone
                     ? const []
                     : [
                         BoxShadow(
@@ -99,6 +99,7 @@ class _TourismChatScreenState extends ConsumerState<TourismChatScreen> {
                 children: [
                   TopBar(
                     showDebug: _showDebug,
+                    allowDebug: AppConfig.debugUi,
                     onDebugChanged: (value) => setState(() {
                       _showDebug = value;
                       ref
@@ -116,7 +117,7 @@ class _TourismChatScreenState extends ConsumerState<TourismChatScreen> {
                   Expanded(
                     child: ListView(
                       controller: _scrollController,
-                      padding: const EdgeInsets.fromLTRB(14, 16, 14, 10),
+                      padding: layout.viewportPadding,
                       children: [
                         const WarningBubble(),
                         if (chatState.userMessage.isNotEmpty)
@@ -142,7 +143,6 @@ class _TourismChatScreenState extends ConsumerState<TourismChatScreen> {
                           cards: chatState.cards,
                           cardCount: chatState.cards.length,
                           queryText: chatState.lastSubmittedMessage,
-                          isWide: isWide,
                           moreMessage: chatState.moreMessage,
                           onMore: _submitSuggestion,
                         ),

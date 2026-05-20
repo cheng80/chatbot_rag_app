@@ -45,62 +45,81 @@ class Composer extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final bottomInset = MediaQuery.viewPaddingOf(context).bottom;
+    final layout = TourismLayoutMetrics.fromWidth(
+      MediaQuery.sizeOf(context).width,
+    );
     return AnimatedContainer(
       duration: tourismMotionDuration,
       curve: tourismMotionCurve,
-      padding: EdgeInsets.fromLTRB(10, 6, 10, 8 + bottomInset),
-      decoration: const BoxDecoration(color: Color(0xffdcece2)),
-      child: AnimatedContainer(
-        duration: tourismMotionDuration,
-        curve: tourismMotionCurve,
-        padding: const EdgeInsets.all(7),
-        decoration: BoxDecoration(
-          color: const Color(0xfff8fcf8),
-          borderRadius: BorderRadius.circular(18),
-          border: Border.all(color: Colors.black.withValues(alpha: 0.08)),
-        ),
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            _ComposerActions(
-              optionSummary: optionSummary,
-              onOpenOptions: onOpenOptions,
-              onRegionPrompt: onRegionPrompt,
-              onQuickPrompt: onQuickPrompt,
+      padding: layout.composerPadding.copyWith(
+        bottom: layout.composerPadding.bottom + bottomInset,
+      ),
+      decoration: const BoxDecoration(color: tourismChatColor),
+      child: Align(
+        alignment: Alignment.centerLeft,
+        child: ConstrainedBox(
+          constraints: BoxConstraints(maxWidth: layout.contentMaxWidth),
+          child: AnimatedContainer(
+            duration: tourismMotionDuration,
+            curve: tourismMotionCurve,
+            padding: const EdgeInsets.all(tourismSpace3),
+            decoration: BoxDecoration(
+              color: tourismSurfaceColor,
+              borderRadius: BorderRadius.circular(22),
+              border: Border.all(color: tourismLineColor),
             ),
-            const SizedBox(height: 5),
-            Row(
-              crossAxisAlignment: CrossAxisAlignment.end,
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              spacing: tourismSpace2,
               children: [
-                Expanded(
-                  child: TextField(
-                    controller: controller,
-                    minLines: 1,
-                    maxLines: 1,
-                    decoration: const InputDecoration(
-                      labelText: '질문',
-                      hintText: '예: 서울 강남구 근처에서 휠체어 관광지 추천해줘',
-                      border: OutlineInputBorder(),
-                      isDense: true,
-                    ),
-                    onSubmitted: (_) => onSubmit(),
-                  ),
+                _ComposerActions(
+                  optionSummary: optionSummary,
+                  onOpenOptions: onOpenOptions,
+                  onRegionPrompt: onRegionPrompt,
+                  onQuickPrompt: onQuickPrompt,
                 ),
-                const SizedBox(width: 6),
-                IconButton.filled(
-                  onPressed: isLoading ? null : onSubmit,
-                  icon: AnimatedSwitcher(
-                    duration: tourismMotionDuration,
-                    child: Icon(
-                      isLoading ? Icons.hourglass_top : Icons.send,
-                      key: ValueKey(isLoading),
+                Row(
+                  crossAxisAlignment: CrossAxisAlignment.end,
+                  spacing: tourismSpace2,
+                  children: [
+                    Expanded(
+                      child: TextField(
+                        controller: controller,
+                        minLines: 1,
+                        maxLines: 2,
+                        style: tourismBodyStyle,
+                        decoration: const InputDecoration(
+                          labelText: '질문',
+                          hintText: '예: 서울 강남구 근처에서 휠체어 관광지 추천해줘',
+                          border: OutlineInputBorder(),
+                          isDense: true,
+                          contentPadding: EdgeInsets.symmetric(
+                            horizontal: tourismSpace3,
+                            vertical: tourismSpace3,
+                          ),
+                        ),
+                        onSubmitted: (_) => onSubmit(),
+                      ),
                     ),
-                  ),
-                  tooltip: inputMode == 'option' ? '조건으로 찾기' : '전송',
+                    SizedBox.square(
+                      dimension: 52,
+                      child: IconButton.filled(
+                        onPressed: isLoading ? null : onSubmit,
+                        icon: AnimatedSwitcher(
+                          duration: tourismMotionDuration,
+                          child: Icon(
+                            isLoading ? Icons.hourglass_top : Icons.send,
+                            key: ValueKey(isLoading),
+                          ),
+                        ),
+                        tooltip: inputMode == 'option' ? '조건으로 찾기' : '전송',
+                      ),
+                    ),
+                  ],
                 ),
               ],
             ),
-          ],
+          ),
         ),
       ),
     );
@@ -123,7 +142,7 @@ class _ComposerActions extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return SizedBox(
-      height: 36,
+      height: 40,
       child: ListView(
         scrollDirection: Axis.horizontal,
         children: [
@@ -139,10 +158,10 @@ class _ComposerActions extends StatelessWidget {
             ),
             onPressed: onOpenOptions,
           ),
-          const SizedBox(width: 6),
+          const SizedBox(width: tourismSpace2),
           ...['서울 강남구', '부산 중구', '제주'].map(
             (region) => Padding(
-              padding: const EdgeInsets.only(right: 6),
+              padding: const EdgeInsets.only(right: tourismSpace2),
               child: ActionChip(
                 label: Text(region),
                 onPressed: () => onRegionPrompt(region),
@@ -153,7 +172,7 @@ class _ComposerActions extends StatelessWidget {
               .take(2)
               .map(
                 (prompt) => Padding(
-                  padding: const EdgeInsets.only(right: 6),
+                  padding: const EdgeInsets.only(right: tourismSpace2),
                   child: ActionChip(
                     label: Text(prompt.$1),
                     onPressed: () => onQuickPrompt(prompt.$2),
@@ -218,6 +237,9 @@ class _OptionSheetState extends State<OptionSheet> {
   @override
   Widget build(BuildContext context) {
     final bottomInset = MediaQuery.viewInsetsOf(context).bottom;
+    final layout = TourismLayoutMetrics.fromWidth(
+      MediaQuery.sizeOf(context).width,
+    );
     final sigunguList = widget.regions
         .firstWhere(
           (item) => item.name == _area,
@@ -230,139 +252,146 @@ class _OptionSheetState extends State<OptionSheet> {
         child: AnimatedPadding(
           duration: tourismMotionDuration,
           curve: tourismMotionCurve,
-          padding: EdgeInsets.fromLTRB(16, 0, 16, 16 + bottomInset),
-          child: ConstrainedBox(
-            constraints: BoxConstraints(
-              maxHeight: MediaQuery.sizeOf(context).height * 0.72,
-            ),
-            child: AnimatedSize(
-              duration: tourismMotionDuration,
-              curve: tourismMotionCurve,
-              alignment: Alignment.topCenter,
-              child: ListView(
-                shrinkWrap: true,
-                children: [
-                  Row(
-                    children: [
-                      const Expanded(
-                        child: Text(
-                          '조건 선택',
-                          style: TextStyle(
-                            fontSize: 18,
-                            fontWeight: FontWeight.w900,
+          padding: EdgeInsets.fromLTRB(
+            tourismSpace4,
+            0,
+            tourismSpace4,
+            tourismSpace4 + bottomInset,
+          ),
+          child: Center(
+            child: ConstrainedBox(
+              constraints: BoxConstraints(
+                maxHeight:
+                    MediaQuery.sizeOf(context).height *
+                    layout.optionSheetHeightRatio,
+                maxWidth: layout.optionSheetMaxWidth,
+              ),
+              child: AnimatedSize(
+                duration: tourismMotionDuration,
+                curve: tourismMotionCurve,
+                alignment: Alignment.topCenter,
+                child: ListView(
+                  shrinkWrap: true,
+                  children: [
+                    Row(
+                      children: [
+                        const Expanded(
+                          child: Text('조건 선택', style: tourismTitleStyle),
+                        ),
+                        TextButton(
+                          onPressed: () => Navigator.of(context).pop(),
+                          child: const Text('완료'),
+                        ),
+                      ],
+                    ),
+                    Row(
+                      spacing: tourismSpace2,
+                      children: [
+                        Expanded(
+                          child: TourismDropdown(
+                            label: '광역 지역',
+                            value: _area,
+                            items: [
+                              '',
+                              ...widget.regions.map((item) => item.name),
+                            ],
+                            onChanged: (value) {
+                              setState(() {
+                                _area = value;
+                                _sigungu = '';
+                              });
+                              widget.onAreaChanged(value);
+                            },
                           ),
                         ),
-                      ),
-                      TextButton(
-                        onPressed: () => Navigator.of(context).pop(),
-                        child: const Text('완료'),
-                      ),
-                    ],
-                  ),
-                  Row(
-                    children: [
-                      Expanded(
-                        child: TourismDropdown(
-                          label: '광역 지역',
-                          value: _area,
-                          items: [
-                            '',
-                            ...widget.regions.map((item) => item.name),
-                          ],
-                          onChanged: (value) {
-                            setState(() {
-                              _area = value;
-                              _sigungu = '';
-                            });
-                            widget.onAreaChanged(value);
-                          },
+                        Expanded(
+                          child: TourismDropdown(
+                            label: '시군구',
+                            value: _sigungu,
+                            items: ['', ...sigunguList],
+                            onChanged: _area.isEmpty
+                                ? null
+                                : (value) {
+                                    setState(() => _sigungu = value);
+                                    widget.onSigunguChanged(value);
+                                  },
+                          ),
                         ),
-                      ),
-                      const SizedBox(width: 8),
-                      Expanded(
-                        child: TourismDropdown(
-                          label: '시군구',
-                          value: _sigungu,
-                          items: ['', ...sigunguList],
-                          onChanged: _area.isEmpty
-                              ? null
-                              : (value) {
-                                  setState(() => _sigungu = value);
-                                  widget.onSigunguChanged(value);
-                                },
+                      ],
+                    ),
+                    OptionChips(
+                      title: '동행 상황',
+                      values: conditionLabels,
+                      selected: _conditions,
+                      onToggle: (value) =>
+                          _toggle(_conditions, value, widget.onToggleCondition),
+                    ),
+                    OptionChips(
+                      title: '접근성 조건',
+                      values: accessLabels,
+                      selected: _conditions,
+                      onToggle: (value) =>
+                          _toggle(_conditions, value, widget.onToggleCondition),
+                    ),
+                    Row(
+                      spacing: tourismSpace2,
+                      children: [
+                        Expanded(
+                          child: TourismDropdown(
+                            label: '조건 강도',
+                            value: _intensity,
+                            items: const ['required', 'optional'],
+                            labels: const {
+                              'required': '꼭 필요',
+                              'optional': '있으면 좋음',
+                            },
+                            onChanged: (value) {
+                              setState(() => _intensity = value);
+                              widget.onIntensityChanged(value);
+                            },
+                          ),
                         ),
-                      ),
-                    ],
-                  ),
-                  OptionChips(
-                    title: '동행 상황',
-                    values: conditionLabels,
-                    selected: _conditions,
-                    onToggle: (value) =>
-                        _toggle(_conditions, value, widget.onToggleCondition),
-                  ),
-                  OptionChips(
-                    title: '접근성 조건',
-                    values: accessLabels,
-                    selected: _conditions,
-                    onToggle: (value) =>
-                        _toggle(_conditions, value, widget.onToggleCondition),
-                  ),
-                  Row(
-                    children: [
-                      Expanded(
-                        child: TourismDropdown(
-                          label: '조건 강도',
-                          value: _intensity,
-                          items: const ['required', 'optional'],
-                          labels: const {
-                            'required': '꼭 필요',
-                            'optional': '있으면 좋음',
-                          },
-                          onChanged: (value) {
-                            setState(() => _intensity = value);
-                            widget.onIntensityChanged(value);
-                          },
+                        Expanded(
+                          child: TourismDropdown(
+                            label: '지역 확장',
+                            value: _expansion,
+                            items: const [
+                              'local_only',
+                              'conditional',
+                              'area_now',
+                            ],
+                            labels: const {
+                              'local_only': '요청 지역만',
+                              'conditional': '부족하면 확장',
+                              'area_now': '지금 확장',
+                            },
+                            onChanged: (value) {
+                              setState(() => _expansion = value);
+                              widget.onExpansionChanged(value);
+                            },
+                          ),
                         ),
+                      ],
+                    ),
+                    OptionChips(
+                      title: '선호',
+                      values: preferenceLabels,
+                      selected: _preferences,
+                      onToggle: (value) => _toggle(
+                        _preferences,
+                        value,
+                        widget.onTogglePreference,
                       ),
-                      const SizedBox(width: 8),
-                      Expanded(
-                        child: TourismDropdown(
-                          label: '지역 확장',
-                          value: _expansion,
-                          items: const [
-                            'local_only',
-                            'conditional',
-                            'area_now',
-                          ],
-                          labels: const {
-                            'local_only': '요청 지역만',
-                            'conditional': '부족하면 확장',
-                            'area_now': '지금 확장',
-                          },
-                          onChanged: (value) {
-                            setState(() => _expansion = value);
-                            widget.onExpansionChanged(value);
-                          },
-                        ),
-                      ),
-                    ],
-                  ),
-                  OptionChips(
-                    title: '선호',
-                    values: preferenceLabels,
-                    selected: _preferences,
-                    onToggle: (value) =>
-                        _toggle(_preferences, value, widget.onTogglePreference),
-                  ),
-                  OptionChips(
-                    title: '제외',
-                    values: exclusionLabels,
-                    selected: _exclusions,
-                    onToggle: (value) =>
-                        _toggle(_exclusions, value, widget.onToggleExclusion),
-                  ),
-                ],
+                    ),
+                    OptionChips(
+                      title: '제외',
+                      values: exclusionLabels,
+                      selected: _exclusions,
+                      onToggle: (value) =>
+                          _toggle(_exclusions, value, widget.onToggleExclusion),
+                    ),
+                  ],
+                ),
               ),
             ),
           ),
@@ -400,8 +429,8 @@ class PromptDrawer extends StatelessWidget {
       tilePadding: EdgeInsets.zero,
       children: [
         Wrap(
-          spacing: 7,
-          runSpacing: 7,
+          spacing: tourismSpace2,
+          runSpacing: tourismSpace2,
           children:
               const [
                     '서울',
@@ -421,10 +450,10 @@ class PromptDrawer extends StatelessWidget {
                   )
                   .toList(),
         ),
-        const SizedBox(height: 8),
+        const SizedBox(height: tourismSpace2),
         Wrap(
-          spacing: 7,
-          runSpacing: 7,
+          spacing: tourismSpace2,
+          runSpacing: tourismSpace2,
           children: quickPrompts
               .map(
                 (prompt) => ActionChip(
@@ -462,7 +491,16 @@ class TourismDropdown extends StatelessWidget {
     return DropdownButtonFormField<String>(
       initialValue: safeValue,
       isExpanded: true,
-      decoration: InputDecoration(labelText: label),
+      style: tourismBodyStyle,
+      decoration: InputDecoration(
+        labelText: label,
+        labelStyle: tourismCaptionStyle,
+        contentPadding: const EdgeInsets.symmetric(
+          horizontal: tourismSpace3,
+          vertical: tourismSpace3,
+        ),
+        border: const OutlineInputBorder(),
+      ),
       items: items
           .map(
             (item) => DropdownMenuItem(
@@ -493,21 +531,15 @@ class OptionChips extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Padding(
-      padding: const EdgeInsets.only(top: 10),
+      padding: const EdgeInsets.only(top: tourismSpace3),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
+        spacing: tourismSpace2,
         children: [
-          Text(
-            title,
-            style: const TextStyle(
-              fontWeight: FontWeight.w900,
-              color: Color(0xff5a6d62),
-            ),
-          ),
-          const SizedBox(height: 6),
+          Text(title, style: tourismCaptionStyle),
           Wrap(
-            spacing: 7,
-            runSpacing: 7,
+            spacing: tourismSpace2,
+            runSpacing: tourismSpace2,
             children: values.entries
                 .map(
                   (entry) => FilterChip(
