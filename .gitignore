@@ -185,6 +185,7 @@ data/external/
 data/models/
 data/source/admin_regions/
 data/generated/nanobanana-images/
+data/generated/simulator_qa/
 data/generated/tour_api/
 tmp/
 
