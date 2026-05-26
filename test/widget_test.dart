@@ -6,6 +6,7 @@ import 'package:chatbot_rag_app/app.dart';
 import 'package:chatbot_rag_app/vm/app_config.dart';
 import 'package:chatbot_rag_app/vm/tourism_models.dart';
 import 'package:chatbot_rag_app/view/widgets/cards_panel.dart';
+import 'package:chatbot_rag_app/view/widgets/message_panels.dart';
 import 'package:chatbot_rag_app/vm/tourism_option_builder.dart';
 import 'package:chatbot_rag_app/view/widgets/common_widgets.dart';
 
@@ -77,6 +78,7 @@ void main() {
     tester.view.devicePixelRatio = 1;
 
     const card = TourismCard(
+      contentId: 'test-card',
       title: '테스트 장소',
       address: '서울특별시 테스트구',
       reason: '사진 확인 동작 테스트',
@@ -119,6 +121,56 @@ void main() {
     await tester.pumpAndSettle();
 
     expect(find.byTooltip('사진 닫기'), findsNothing);
+  });
+
+  testWidgets('map button uses a monochrome material icon', (tester) async {
+    const card = TourismCard(
+      contentId: 'test-map-card',
+      title: '지도 장소',
+      address: '서울특별시 테스트구',
+      reason: '지도 버튼 테스트',
+      sourceName: '한국관광공사 무장애 여행 정보',
+      sourceUrl: '',
+      imageUrl: '',
+      tel: '',
+      mapX: 127.0,
+      mapY: 37.0,
+      accessibility: {},
+      rawFields: {},
+      accessibilityTags: [],
+      familyTags: [],
+    );
+
+    await tester.pumpWidget(
+      const MaterialApp(
+        home: Scaffold(
+          body: PlaceCard(card: card, queryText: ''),
+        ),
+      ),
+    );
+    await tester.pump();
+
+    expect(find.text('지도 보기'), findsOneWidget);
+    expect(find.byIcon(Icons.map_outlined), findsOneWidget);
+  });
+
+  testWidgets('live update banner exposes a latest-result action', (
+    tester,
+  ) async {
+    var tapped = false;
+
+    await tester.pumpWidget(
+      MaterialApp(
+        home: Scaffold(body: LiveUpdateBanner(onPressed: () => tapped = true)),
+      ),
+    );
+    await tester.pump();
+
+    expect(find.text('최신 후보 확인 중'), findsOneWidget);
+    expect(find.text('결과 보기'), findsOneWidget);
+
+    await tester.tap(find.text('결과 보기'));
+    expect(tapped, isTrue);
   });
 
   test('option builder matches web query contract', () {

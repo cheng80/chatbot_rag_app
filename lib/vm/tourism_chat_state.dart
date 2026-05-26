@@ -10,6 +10,8 @@ class TourismChatState {
     this.clarificationType,
     this.suggestionType,
     this.moreMessage,
+    this.liveUpdatePending = false,
+    this.liveUpdateId,
     this.isLoading = false,
     this.suggestions = const [],
     this.sources = const [],
@@ -24,6 +26,8 @@ class TourismChatState {
   final String? clarificationType;
   final String? suggestionType;
   final String? moreMessage;
+  final bool liveUpdatePending;
+  final String? liveUpdateId;
   final bool isLoading;
   final List<String> suggestions;
   final List<TourismSource> sources;
@@ -58,6 +62,8 @@ class TourismChatState {
     String? clarificationType,
     String? suggestionType,
     String? moreMessage,
+    bool? liveUpdatePending,
+    String? liveUpdateId,
     bool? isLoading,
     List<String>? suggestions,
     List<TourismSource>? sources,
@@ -72,6 +78,8 @@ class TourismChatState {
       clarificationType: clarificationType,
       suggestionType: suggestionType,
       moreMessage: moreMessage,
+      liveUpdatePending: liveUpdatePending ?? this.liveUpdatePending,
+      liveUpdateId: liveUpdateId,
       isLoading: isLoading ?? this.isLoading,
       suggestions: suggestions ?? this.suggestions,
       sources: sources ?? this.sources,
@@ -114,6 +122,11 @@ TourismChatState parseTourismChatResponse(Map<String, dynamic> payload) {
       .firstOrNull;
   final diagnostics = <String>[_modeDescription(mode)];
   if (degraded) diagnostics.add('일부 자료 확인이 원활하지 않아 준비된 자료로 먼저 안내했습니다.');
+  final liveUpdatePending = payload['live_update_pending'] == true;
+  final liveUpdateId = '${payload['live_update_id'] ?? ''}'.trim();
+  if (liveUpdatePending) {
+    diagnostics.add('최신 후보 확인이 늦게 도착할 수 있습니다.');
+  }
   if (payload['reasoning_assist_used'] == true) {
     diagnostics.add('복합 조건을 반영하기 위해 추론 보조로 후보 순서를 조정했습니다.');
   }
@@ -133,6 +146,8 @@ TourismChatState parseTourismChatResponse(Map<String, dynamic> payload) {
     clarificationType: clarificationType,
     suggestionType: suggestionType,
     moreMessage: moreMessage,
+    liveUpdatePending: liveUpdatePending,
+    liveUpdateId: liveUpdateId.isEmpty ? null : liveUpdateId,
     suggestions: suggestions,
     sources: dedupedSources.isEmpty
         ? const [TourismSource(title: '출처 정보가 비어 있습니다. 카드별 출처를 확인하세요.')]
@@ -205,6 +220,10 @@ String suggestionButtonLabel(String message, [String? suggestionType]) {
 String _modeLabel(String mode, bool degraded) {
   if (mode == 'live') return 'Live API 응답';
   if (mode == 'live_top_up') return 'Live 보강 응답';
+  if (mode == 'live_update') return '최신 후보 갱신';
+  if (mode == 'live_update_pending') return '최신 후보 확인 중';
+  if (mode == 'live_update_timeout') return '최신 후보 확인 지연';
+  if (mode == 'live_update_empty') return '최신 후보 없음';
   if (mode == 'cache') return 'Live 캐시 응답';
   if (mode == 'indexed') return degraded ? '색인 fallback' : '색인 응답';
   if (mode == 'sample') return '샘플 fallback';
@@ -216,6 +235,10 @@ String _modeLabel(String mode, bool degraded) {
 String _modeDescription(String mode) {
   if (mode == 'live') return '지역이 확정되어 TourAPI 후보와 접근성 상세를 live로 조회했습니다.';
   if (mode == 'live_top_up') return '저장된 후보에 live TourAPI 조회 후보를 보강했습니다.';
+  if (mode == 'live_update') return '사용자가 요청한 최신 후보 확인 결과를 반영했습니다.';
+  if (mode == 'live_update_pending') return '최신 후보 확인이 진행 중입니다.';
+  if (mode == 'live_update_timeout') return '최신 후보 확인이 제한 시간 안에 끝나지 않았습니다.';
+  if (mode == 'live_update_empty') return '추가로 확인된 최신 후보가 없습니다.';
   if (mode == 'cache') {
     return '이전에 live 조회해 저장한 Markdown 캐시에서 같은 지역 관광 카드를 찾았습니다.';
   }

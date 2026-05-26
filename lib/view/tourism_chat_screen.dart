@@ -120,6 +120,10 @@ class _TourismChatScreenState extends ConsumerState<TourismChatScreen> {
                       padding: layout.viewportPadding,
                       children: [
                         const WarningBubble(),
+                        if (chatState.liveUpdatePending)
+                          LiveUpdateBanner(
+                            onPressed: () => _submitSuggestion('최신 결과 업데이트 보기'),
+                          ),
                         if (chatState.userMessage.isNotEmpty)
                           UserBubble(text: chatState.userMessage),
                         AnswerPanel(
@@ -222,6 +226,8 @@ class _TourismChatScreenState extends ConsumerState<TourismChatScreen> {
     final chatState = ref.read(tourismChatNotifierProvider);
     if (chatState.cards.isNotEmpty) {
       _showToast('${chatState.cards.length}개의 추천 카드를 찾았습니다.');
+    } else if (chatState.liveUpdatePending) {
+      _showToast('최신 후보를 계속 확인하고 있습니다.');
     } else if (chatState.requestState.contains('오류')) {
       _showToast('요청 처리 중 문제가 발생했습니다.');
     } else if (chatState.requestState.contains('실패')) {

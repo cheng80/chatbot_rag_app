@@ -22,6 +22,7 @@ class TourismSource {
 
 class TourismCard {
   const TourismCard({
+    required this.contentId,
     required this.title,
     required this.address,
     required this.reason,
@@ -39,11 +40,12 @@ class TourismCard {
 
   factory TourismCard.fromJson(Map card) {
     return TourismCard(
+      contentId: '${card['content_id'] ?? ''}',
       title: '${card['title'] ?? ''}',
       address: '${card['address'] ?? ''}',
       reason: '${card['recommendation_reason'] ?? ''}',
       sourceName: '${card['source_name'] ?? '한국관광공사 무장애 여행 정보'}',
-      sourceUrl: '${card['source_url'] ?? ''}',
+      sourceUrl: usableSourceUrl('${card['source_url'] ?? ''}') ?? '',
       imageUrl: '${card['image_url'] ?? ''}',
       tel: '${card['tel'] ?? ''}',
       mapX: _optionalDouble(card['map_x'] ?? card['mapx']),
@@ -59,6 +61,7 @@ class TourismCard {
     );
   }
 
+  final String contentId;
   final String title;
   final String address;
   final String reason;
@@ -76,6 +79,7 @@ class TourismCard {
   static List<TourismCard> demoCards() {
     return [
       const TourismCard(
+        contentId: 'demo-seonjeongneung',
         title: '서울 선릉과 정릉',
         address: '서울특별시 강남구 선릉로100길 1',
         reason: '도심 접근성이 좋고 산책 동선이 비교적 단순해 보호자와 함께 이동 계획을 세우기 좋습니다.',
@@ -95,6 +99,7 @@ class TourismCard {
         familyTags: ['가족 산책'],
       ),
       const TourismCard(
+        contentId: 'demo-coex-aquarium',
         title: '코엑스 아쿠아리움',
         address: '서울특별시 강남구 영동대로 513',
         reason: '실내 이동 중심이라 날씨 영향을 줄일 수 있고, 가족 동반 시 관람 흐름을 설명하기 쉽습니다.',

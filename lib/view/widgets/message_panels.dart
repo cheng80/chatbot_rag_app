@@ -71,6 +71,62 @@ class UserBubble extends StatelessWidget {
   }
 }
 
+class LiveUpdateBanner extends StatelessWidget {
+  const LiveUpdateBanner({super.key, required this.onPressed});
+
+  final VoidCallback onPressed;
+
+  @override
+  Widget build(BuildContext context) {
+    return TourismAnimatedEntrance(
+      child: TourismPanel(
+        color: const Color(0xffe7f2ec),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            const Row(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Padding(
+                  padding: EdgeInsets.only(top: 2),
+                  child: Icon(
+                    Icons.sync_outlined,
+                    size: 20,
+                    color: tourismPrimaryColor,
+                  ),
+                ),
+                SizedBox(width: tourismSpace3),
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    spacing: tourismSpace1,
+                    children: [
+                      Text('최신 후보 확인 중', style: tourismTitleStyle),
+                      Text(
+                        '먼저 확인된 결과를 보여드리고 있어요. 최신 확인이 끝나면 새 결과를 반영할 수 있습니다.',
+                        style: tourismSecondaryStyle,
+                      ),
+                    ],
+                  ),
+                ),
+              ],
+            ),
+            const SizedBox(height: tourismSpace3),
+            Align(
+              alignment: Alignment.centerRight,
+              child: FilledButton.tonalIcon(
+                onPressed: onPressed,
+                icon: const Icon(Icons.refresh_outlined, size: 18),
+                label: const Text('결과 보기'),
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
 class AnswerPanel extends StatelessWidget {
   const AnswerPanel({
     super.key,

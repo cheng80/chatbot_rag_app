@@ -209,11 +209,7 @@ class PlaceCardState extends State<PlaceCard> {
                         ),
                       if (TourismMapHandler.hasMapCoords(widget.card))
                         OutlinedButton.icon(
-                          icon: SvgPicture.asset(
-                            'packages/map_launcher/assets/icons/apple.svg',
-                            width: 18,
-                            height: 18,
-                          ),
+                          icon: const Icon(Icons.map_outlined, size: 18),
                           label: const Text('지도 보기'),
                           onPressed: () => _openMapsSheet(context),
                         ),
